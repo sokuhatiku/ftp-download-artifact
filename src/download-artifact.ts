@@ -1,5 +1,5 @@
 import * as core from '@actions/core'
-import * as artifact from '@actions/artifact'
+import * as artifact from './ftp-artifact-client'
 import * as os from 'os'
 import {resolve} from 'path'
 import {Inputs, Outputs} from './constants'
@@ -18,7 +18,12 @@ async function run(): Promise<void> {
     }
     core.debug(`Resolved path is ${resolvedPath}`)
 
-    const artifactClient = artifact.create()
+    const artifactClient = artifact.create(
+      'syna.nas',
+      21,
+      'anonymous',
+      'anonymous'
+    )
     if (!name) {
       // download all artifacts
       core.info('No artifact name specified, downloading all artifacts')

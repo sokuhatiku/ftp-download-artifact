@@ -29,9 +29,11 @@
   "homepage": "https://github.com/actions/download-artifact#readme",
   "dependencies": {
     "@actions/artifact": "^1.1.1",
-    "@actions/core": "^1.10.0"
+    "@actions/core": "^1.10.0",
+    "ftp": "^0.3.10"
   },
   "devDependencies": {
+    "@types/ftp": "^0.3.33",
     "@types/node": "^12.12.6",
     "@typescript-eslint/eslint-plugin": "^5.40.1",
     "@vercel/ncc": "^0.33.4",
