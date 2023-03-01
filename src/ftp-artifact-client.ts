@@ -42,7 +42,7 @@ class FTPArtifactClient implements ArtifactClient {
 
   async downloadArtifact(
     name: string,
-    resolvedPath: any,
+    resolvedPath: string,
     downloadOptions: DownloadOptions
   ): Promise<DownloadResponse> {
     const client = new FTPClient()
