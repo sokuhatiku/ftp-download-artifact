@@ -65,7 +65,7 @@ async function run(): Promise<void> {
     core.setOutput(Outputs.DownloadPath, resolvedPath)
     core.info('Artifact download has finished successfully')
   } catch (err) {
-    core.setFailed(err.message)
+    core.setFailed((err as Error).message)
   }
 }
 

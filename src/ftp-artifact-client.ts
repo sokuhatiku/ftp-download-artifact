@@ -6,7 +6,6 @@ import {
   ArtifactClient,
   DownloadOptions,
   DownloadResponse,
-  UploadOptions,
   UploadResponse
 } from '@actions/artifact'
 
@@ -33,12 +32,7 @@ class FTPArtifactClient implements ArtifactClient {
     this.remotePath = remotePath ?? '/'
   }
 
-  uploadArtifact(
-    name: string,
-    files: string[],
-    rootDirectory: string,
-    options?: UploadOptions | undefined
-  ): Promise<UploadResponse> {
+  uploadArtifact(): Promise<UploadResponse> {
     throw new Error('Method not implemented.')
   }
 
