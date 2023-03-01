@@ -8,6 +8,18 @@ inputs:
   path:
     description: 'Destination path'
     required: false
+  server:
+    required: true
+  port:
+    required: false
+    default: 21
+  username:
+    required: true
+  password:
+    required: true
+  remote-path:
+    required: false
+    default: /
 outputs:
   download-path:
     description: 'Path of artifact download'

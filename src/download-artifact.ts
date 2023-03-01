@@ -8,6 +8,11 @@ async function run(): Promise<void> {
   try {
     const name = core.getInput(Inputs.Name, {required: false})
     const path = core.getInput(Inputs.Path, {required: false})
+    const server = core.getInput(Inputs.Server, {required: true})
+    const port = parseInt(core.getInput(Inputs.Port, {required: false}))
+    const username = core.getInput(Inputs.Username, {required: true})
+    const password = core.getInput(Inputs.Password, {required: true})
+    const remotePath = core.getInput(Inputs.RemotePath, {required: false})
 
     let resolvedPath
     // resolve tilde expansions, path.replace only replaces the first occurrence of a pattern
@@ -19,10 +24,11 @@ async function run(): Promise<void> {
     core.debug(`Resolved path is ${resolvedPath}`)
 
     const artifactClient = artifact.create(
-      'syna.nas',
-      21,
-      'anonymous',
-      'anonymous'
+      server,
+      port,
+      username,
+      password,
+      remotePath
     )
     if (!name) {
       // download all artifacts
