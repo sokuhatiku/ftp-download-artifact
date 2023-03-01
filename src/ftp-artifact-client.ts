@@ -58,26 +58,48 @@ class FTPArtifactClient implements ArtifactClient {
       })
     })
 
-    if(downloadOptions.createArtifactFolder){
+    const serverSideArtifactPath = path.join(
+      this.remotePath,
+      process.env['GITHUB_RUN_ID'] ?? '0',
+      name
+    )
+
+    if (downloadOptions.createArtifactFolder) {
       resolvedPath = path.join(resolvedPath, name)
       fs.mkdirSync(resolvedPath)
     }
 
-    await new Promise<void>((resolve, reject) => {
-      client.get(path.join(this.remotePath, name), (err, stream) => {
-        if (err) {
-          reject(err)
-        } else {
-          fs.writeFile(resolvedPath, stream, err => {
-            if (err) {
-              reject(err)
-            } else {
-              resolve()
-            }
+    const filesToDownload: string[] = []
+
+    await listToDownloadFilesRecursive(
+      client,
+      serverSideArtifactPath,
+      filesToDownload
+    )
+
+    for (const serverSideFilePath of filesToDownload) {
+      await new Promise<void>((resolve, reject) => {
+        client.get(serverSideFilePath, (err, downloadStream) => {
+          if (err) {
+            reject(err)
+          }
+          const pathInArtifact = path.relative(
+            serverSideArtifactPath,
+            serverSideFilePath
+          )
+          const localFilePath = path.join(resolvedPath, pathInArtifact)
+          core.info(`Downloading: ${pathInArtifact}`)
+          fs.mkdirSync(path.dirname(localFilePath), {recursive: true})
+          const writeStream = fs.createWriteStream(localFilePath, {
+            autoClose: true
           })
-        }
+          downloadStream.pipe(writeStream)
+          downloadStream.once('error', reject)
+          writeStream.once('error', reject)
+          writeStream.once('finish', resolve)
+        })
       })
-    })
+    }
 
     client.end()
 
@@ -90,6 +112,36 @@ class FTPArtifactClient implements ArtifactClient {
   downloadAllArtifacts(path?: string): Promise<DownloadResponse[]> {
     throw new Error('Method not implemented.')
   }
+}
+
+async function listToDownloadFilesRecursive(
+  client: FTPClient,
+  currentDir: string,
+  filesToDownload: string[]
+) {
+  await new Promise<void>((resolve, reject) => {
+    client.list(currentDir, (err, list) => {
+      if (err) {
+        reject(err)
+      }
+      try {
+        for (const file of list) {
+          if (file.type === 'd') {
+            listToDownloadFilesRecursive(
+              client,
+              path.join(currentDir, file.name),
+              filesToDownload
+            )
+          } else {
+            filesToDownload.push(path.join(currentDir, file.name))
+          }
+        }
+      } catch (err) {
+        reject(err)
+      }
+      resolve()
+    })
+  })
 }
 
 export function create(
