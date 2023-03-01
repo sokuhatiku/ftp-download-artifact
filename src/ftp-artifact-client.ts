@@ -71,7 +71,7 @@ class FTPArtifactClient implements ArtifactClient {
 
     const filesToDownload: string[] = []
 
-    await listToDownloadFilesRecursive(
+    await this.listToDownloadFilesRecursive(
       client,
       serverSideArtifactPath,
       filesToDownload
@@ -112,36 +112,36 @@ class FTPArtifactClient implements ArtifactClient {
   downloadAllArtifacts(path?: string): Promise<DownloadResponse[]> {
     throw new Error('Method not implemented.')
   }
-}
 
-async function listToDownloadFilesRecursive(
-  client: FTPClient,
-  currentDir: string,
-  filesToDownload: string[]
-) {
-  await new Promise<void>((resolve, reject) => {
-    client.list(currentDir, (err, list) => {
-      if (err) {
-        reject(err)
-      }
-      try {
-        for (const file of list) {
-          if (file.type === 'd') {
-            listToDownloadFilesRecursive(
-              client,
-              path.join(currentDir, file.name),
-              filesToDownload
-            )
-          } else {
-            filesToDownload.push(path.join(currentDir, file.name))
-          }
+  async listToDownloadFilesRecursive(
+    client: FTPClient,
+    currentDir: string,
+    filesToDownload: string[]
+  ): Promise<void> {
+    await new Promise<void>((resolve, reject) => {
+      client.list(currentDir, (err, list) => {
+        if (err) {
+          reject(err)
         }
-      } catch (err) {
-        reject(err)
-      }
-      resolve()
+        try {
+          for (const file of list) {
+            if (file.type === 'd') {
+              this.listToDownloadFilesRecursive(
+                client,
+                path.join(currentDir, file.name),
+                filesToDownload
+              )
+            } else {
+              filesToDownload.push(path.join(currentDir, file.name))
+            }
+          }
+        } catch (err) {
+          reject(err)
+        }
+        resolve()
+      })
     })
-  })
+  }
 }
 
 export function create(
