@@ -105,4 +105,64 @@ describe('FTP Artifact Client', () => {
       fs.existsSync(path.join(clientRoot, 'downloadDir/TestArtifact/3/3.txt'))
     ).toBe(true)
   })
+
+  test('Download All Artifacts', async () => {
+    fs.mkdirSync(path.join(serverRoot, run_id, 'TestArtifact'), {
+      recursive: true
+    })
+    fs.writeFileSync(path.join(serverRoot, run_id, 'TestArtifact/1.txt'), '1')
+    fs.writeFileSync(path.join(serverRoot, run_id, 'TestArtifact/2.txt'), '2')
+    fs.mkdirSync(path.join(serverRoot, run_id, 'TestArtifact/3'), {
+      recursive: true
+    })
+    fs.writeFileSync(path.join(serverRoot, run_id, 'TestArtifact/3/3.txt'), '3')
+
+    fs.mkdirSync(path.join(serverRoot, run_id, 'TestArtifact2'), {
+      recursive: true
+    })
+    fs.writeFileSync(path.join(serverRoot, run_id, 'TestArtifact2/4.txt'), '4')
+    fs.writeFileSync(path.join(serverRoot, run_id, 'TestArtifact2/5.txt'), '5')
+    fs.mkdirSync(path.join(serverRoot, run_id, 'TestArtifact2/6'), {
+      recursive: true
+    })
+    fs.writeFileSync(
+      path.join(serverRoot, run_id, 'TestArtifact2/6/6.txt'),
+      '6'
+    )
+
+    const client = create(serverAddr, serverPort, 'anonymous', 'anonymous')
+    const responses = await client.downloadAllArtifacts(
+      path.join(clientRoot, 'downloadDir')
+    )
+
+    expect(responses.length).toBe(2)
+
+    expect(responses[0].artifactName).toBe('TestArtifact')
+    expect(responses[0].downloadPath).toBe(
+      path.join(clientRoot, 'downloadDir', 'TestArtifact')
+    )
+    expect(
+      fs.existsSync(path.join(clientRoot, 'downloadDir/TestArtifact/1.txt'))
+    ).toBe(true)
+    expect(
+      fs.existsSync(path.join(clientRoot, 'downloadDir/TestArtifact/2.txt'))
+    ).toBe(true)
+    expect(
+      fs.existsSync(path.join(clientRoot, 'downloadDir/TestArtifact/3/3.txt'))
+    ).toBe(true)
+
+    expect(responses[1].artifactName).toBe('TestArtifact2')
+    expect(responses[1].downloadPath).toBe(
+      path.join(clientRoot, 'downloadDir', 'TestArtifact2')
+    )
+    expect(
+      fs.existsSync(path.join(clientRoot, 'downloadDir/TestArtifact2/4.txt'))
+    ).toBe(true)
+    expect(
+      fs.existsSync(path.join(clientRoot, 'downloadDir/TestArtifact2/5.txt'))
+    ).toBe(true)
+    expect(
+      fs.existsSync(path.join(clientRoot, 'downloadDir/TestArtifact2/6/6.txt'))
+    ).toBe(true)
+  })
 })

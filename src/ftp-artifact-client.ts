@@ -10,6 +10,8 @@ import {
   UploadResponse
 } from '@actions/artifact'
 
+const run_id: string = process.env['GITHUB_RUN_ID'] ?? '0'
+
 class FTPArtifactClient implements ArtifactClient {
   private host: string
   private port: number
@@ -46,7 +48,6 @@ class FTPArtifactClient implements ArtifactClient {
     downloadOptions: DownloadOptions
   ): Promise<DownloadResponse> {
     const client = new FTPClient()
-
     await new Promise<void>((resolve, reject) => {
       client.once('ready', resolve)
       client.once('error', reject)
@@ -58,15 +59,80 @@ class FTPArtifactClient implements ArtifactClient {
       })
     })
 
-    const serverSideArtifactPath = path.join(
-      this.remotePath,
-      process.env['GITHUB_RUN_ID'] ?? '0',
-      name
+    const response = await this.downloadArtifactInternal(
+      client,
+      name,
+      resolvedPath,
+      downloadOptions
     )
+
+    client.end()
+
+    return response
+  }
+
+  async downloadAllArtifacts(
+    resolvedPath?: string
+  ): Promise<DownloadResponse[]> {
+    const client = new FTPClient()
+    await new Promise<void>((resolve, reject) => {
+      client.once('ready', resolve)
+      client.once('error', reject)
+      client.connect({
+        host: this.host,
+        port: this.port,
+        user: this.username,
+        password: this.password
+      })
+    })
+
+    const serverSideArtifactsBasePath = path.join(this.remotePath, run_id)
+
+    if (resolvedPath === undefined) {
+      resolvedPath = process.cwd()
+    }
+
+    const artifactsList = await new Promise<FTPClient.ListingElement[]>(
+      (resolve, reject) => {
+        client.list(serverSideArtifactsBasePath, (err, list) => {
+          if (err) {
+            reject(err)
+          } else {
+            resolve(list)
+          }
+        })
+      }
+    )
+
+    const responses: DownloadResponse[] = []
+    for (const file of artifactsList) {
+      if (file.type === 'd') {
+        const result = await this.downloadArtifactInternal(
+          client,
+          file.name,
+          resolvedPath,
+          {createArtifactFolder: true}
+        )
+        responses.push(result)
+      }
+    }
+
+    client.end()
+
+    return responses
+  }
+
+  async downloadArtifactInternal(
+    client: FTPClient,
+    name: string,
+    resolvedPath: string,
+    downloadOptions: DownloadOptions
+  ): Promise<DownloadResponse> {
+    const serverSideArtifactPath = path.join(this.remotePath, run_id, name)
 
     if (downloadOptions.createArtifactFolder) {
       resolvedPath = path.join(resolvedPath, name)
-      fs.mkdirSync(resolvedPath)
+      fs.mkdirSync(resolvedPath, {recursive: true})
     }
 
     const filesToDownload: string[] = []
@@ -100,17 +166,10 @@ class FTPArtifactClient implements ArtifactClient {
         })
       })
     }
-
-    client.end()
-
     return {
       artifactName: name,
       downloadPath: resolvedPath
     } as DownloadResponse
-  }
-
-  downloadAllArtifacts(path?: string): Promise<DownloadResponse[]> {
-    throw new Error('Method not implemented.')
   }
 
   async listToDownloadFilesRecursive(
