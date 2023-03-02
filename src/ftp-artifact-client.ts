@@ -173,31 +173,33 @@ class FTPArtifactClient implements ArtifactClient {
     currentDir: string,
     filesToDownload: string[]
   ): Promise<void> {
-    await new Promise<void>((resolve, reject) => {
-      client.list(currentDir, (err, list) => {
-        if (err) {
-          return reject(err)
-        }
-        try {
-          for (const file of list) {
-            if (file.type === 'd') {
-              this.listToDownloadFilesRecursive(
-                client,
-                path.join(currentDir, file.name).replace(/\\/g, '/'),
-                filesToDownload
-              )
-            } else {
-              filesToDownload.push(
-                path.join(currentDir, file.name).replace(/\\/g, '/')
-              )
-            }
+    const list = await new Promise<FTPClient.ListingElement[]>(
+      (resolve, reject) => {
+        console.log(`Listing: ${currentDir}`)
+        client.list(currentDir, (err, list) => {
+          if (err) {
+            return reject(err)
+          } else {
+            return resolve(list)
           }
-        } catch (err) {
-          return reject(err)
-        }
-        return resolve()
-      })
-    })
+        })
+      }
+    )
+
+    for (const file of list) {
+      console.log(`${file.name} (${file.type})`)
+      if (file.type === 'd') {
+        await this.listToDownloadFilesRecursive(
+          client,
+          path.join(currentDir, file.name).replace(/\\/g, '/'),
+          filesToDownload
+        )
+      } else {
+        filesToDownload.push(
+          path.join(currentDir, file.name).replace(/\\/g, '/')
+        )
+      }
+    }
   }
 }
 

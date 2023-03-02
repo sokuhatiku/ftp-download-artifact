@@ -8805,27 +8805,26 @@ class FTPArtifactClient {
     }
     listToDownloadFilesRecursive(client, currentDir, filesToDownload) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield new Promise((resolve, reject) => {
+            const list = yield new Promise((resolve, reject) => {
+                console.log(`Listing: ${currentDir}`);
                 client.list(currentDir, (err, list) => {
                     if (err) {
                         return reject(err);
                     }
-                    try {
-                        for (const file of list) {
-                            if (file.type === 'd') {
-                                this.listToDownloadFilesRecursive(client, path.join(currentDir, file.name).replace(/\\/g, '/'), filesToDownload);
-                            }
-                            else {
-                                filesToDownload.push(path.join(currentDir, file.name).replace(/\\/g, '/'));
-                            }
-                        }
+                    else {
+                        return resolve(list);
                     }
-                    catch (err) {
-                        return reject(err);
-                    }
-                    return resolve();
                 });
             });
+            for (const file of list) {
+                console.log(`${file.name} (${file.type})`);
+                if (file.type === 'd') {
+                    yield this.listToDownloadFilesRecursive(client, path.join(currentDir, file.name).replace(/\\/g, '/'), filesToDownload);
+                }
+                else {
+                    filesToDownload.push(path.join(currentDir, file.name).replace(/\\/g, '/'));
+                }
+            }
         });
     }
 }
