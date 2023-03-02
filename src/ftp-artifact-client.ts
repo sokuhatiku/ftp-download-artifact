@@ -90,9 +90,9 @@ class FTPArtifactClient implements ArtifactClient {
       (resolve, reject) => {
         client.list(serverSideArtifactsBasePath, (err, list) => {
           if (err) {
-            reject(err)
+            return reject(err)
           } else {
-            resolve(list)
+            return resolve(list)
           }
         })
       }
@@ -141,7 +141,7 @@ class FTPArtifactClient implements ArtifactClient {
       await new Promise<void>((resolve, reject) => {
         client.get(serverSideFilePath, (err, downloadStream) => {
           if (err) {
-            reject(err)
+            return reject(err)
           }
           const pathInArtifact = path.relative(
             serverSideArtifactPath,
@@ -174,7 +174,7 @@ class FTPArtifactClient implements ArtifactClient {
     await new Promise<void>((resolve, reject) => {
       client.list(currentDir, (err, list) => {
         if (err) {
-          reject(err)
+          return reject(err)
         }
         try {
           for (const file of list) {
@@ -189,9 +189,9 @@ class FTPArtifactClient implements ArtifactClient {
             }
           }
         } catch (err) {
-          reject(err)
+          return reject(err)
         }
-        resolve()
+        return resolve()
       })
     })
   }
