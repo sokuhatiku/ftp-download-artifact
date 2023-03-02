@@ -122,7 +122,9 @@ class FTPArtifactClient implements ArtifactClient {
     resolvedPath: string,
     downloadOptions: DownloadOptions
   ): Promise<DownloadResponse> {
-    const serverSideArtifactPath = path.join(this.remotePath, run_id, name)
+    const serverSideArtifactPath = path
+      .join(this.remotePath, run_id, name)
+      .replace(/\\/g, '/')
 
     if (downloadOptions.createArtifactFolder) {
       resolvedPath = path.join(resolvedPath, name)
@@ -181,11 +183,13 @@ class FTPArtifactClient implements ArtifactClient {
             if (file.type === 'd') {
               this.listToDownloadFilesRecursive(
                 client,
-                path.join(currentDir, file.name),
+                path.join(currentDir, file.name).replace(/\\/g, '/'),
                 filesToDownload
               )
             } else {
-              filesToDownload.push(path.join(currentDir, file.name))
+              filesToDownload.push(
+                path.join(currentDir, file.name).replace(/\\/g, '/')
+              )
             }
           }
         } catch (err) {

@@ -8768,7 +8768,9 @@ class FTPArtifactClient {
     }
     downloadArtifactInternal(client, name, resolvedPath, downloadOptions) {
         return __awaiter(this, void 0, void 0, function* () {
-            const serverSideArtifactPath = path.join(this.remotePath, run_id, name);
+            const serverSideArtifactPath = path
+                .join(this.remotePath, run_id, name)
+                .replace(/\\/g, '/');
             if (downloadOptions.createArtifactFolder) {
                 resolvedPath = path.join(resolvedPath, name);
                 fs.mkdirSync(resolvedPath, { recursive: true });
@@ -8811,10 +8813,10 @@ class FTPArtifactClient {
                     try {
                         for (const file of list) {
                             if (file.type === 'd') {
-                                this.listToDownloadFilesRecursive(client, path.join(currentDir, file.name), filesToDownload);
+                                this.listToDownloadFilesRecursive(client, path.join(currentDir, file.name).replace(/\\/g, '/'), filesToDownload);
                             }
                             else {
-                                filesToDownload.push(path.join(currentDir, file.name));
+                                filesToDownload.push(path.join(currentDir, file.name).replace(/\\/g, '/'));
                             }
                         }
                     }
