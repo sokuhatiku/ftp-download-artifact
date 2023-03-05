@@ -8540,10 +8540,11 @@ var Inputs;
 (function (Inputs) {
     Inputs["Name"] = "name";
     Inputs["Path"] = "path";
-    Inputs["Server"] = "server";
+    Inputs["Host"] = "host";
     Inputs["Port"] = "port";
     Inputs["Username"] = "username";
     Inputs["Password"] = "password";
+    Inputs["Secure"] = "secure";
     Inputs["RemotePath"] = "remote-path";
 })(Inputs = exports.Inputs || (exports.Inputs = {}));
 var Outputs;
@@ -8602,10 +8603,11 @@ function run() {
         try {
             const name = core.getInput(constants_1.Inputs.Name, { required: false });
             const path = core.getInput(constants_1.Inputs.Path, { required: false });
-            const server = core.getInput(constants_1.Inputs.Server, { required: true });
+            const host = core.getInput(constants_1.Inputs.Host, { required: true });
             const port = parseInt(core.getInput(constants_1.Inputs.Port, { required: false }));
             const username = core.getInput(constants_1.Inputs.Username, { required: true });
             const password = core.getInput(constants_1.Inputs.Password, { required: true });
+            const secure = Boolean(core.getInput(constants_1.Inputs.Secure, { required: false }));
             const remotePath = core.getInput(constants_1.Inputs.RemotePath, { required: false });
             let resolvedPath;
             // resolve tilde expansions, path.replace only replaces the first occurrence of a pattern
@@ -8616,7 +8618,7 @@ function run() {
                 resolvedPath = (0, path_1.resolve)(path);
             }
             core.debug(`Resolved path is ${resolvedPath}`);
-            const artifactClient = artifact.create(server, port, username, password, remotePath);
+            const artifactClient = artifact.create(host, port, username, password, secure, remotePath);
             if (!name) {
                 // download all artifacts
                 core.info('No artifact name specified, downloading all artifacts');
@@ -8700,11 +8702,12 @@ const fs = __importStar(__nccwpck_require__(7147));
 const path = __importStar(__nccwpck_require__(1017));
 const run_id = (_a = process.env['GITHUB_RUN_ID']) !== null && _a !== void 0 ? _a : '0';
 class FTPArtifactClient {
-    constructor(host, port, username, password, remotePath) {
+    constructor(host, port, username, password, secure, remotePath) {
         this.host = host;
         this.port = port;
         this.username = username;
         this.password = password;
+        this.secure = secure;
         this.remotePath = remotePath !== null && remotePath !== void 0 ? remotePath : '/';
     }
     uploadArtifact() {
@@ -8720,7 +8723,8 @@ class FTPArtifactClient {
                     host: this.host,
                     port: this.port,
                     user: this.username,
-                    password: this.password
+                    password: this.password,
+                    secure: this.secure
                 });
             });
             const response = yield this.downloadArtifactInternal(client, name, resolvedPath, downloadOptions);
@@ -8828,8 +8832,8 @@ class FTPArtifactClient {
         });
     }
 }
-function create(host, port, username, password, remotePath) {
-    return new FTPArtifactClient(host, port, username, password, remotePath);
+function create(host, port, username, password, secure, remotePath) {
+    return new FTPArtifactClient(host, port, username, password, secure, remotePath);
 }
 exports.create = create;
 

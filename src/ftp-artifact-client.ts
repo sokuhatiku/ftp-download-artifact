@@ -215,5 +215,12 @@ export function create(
   secure: boolean,
   remotePath?: string
 ): FTPArtifactClient {
-  return new FTPArtifactClient(host, port, username, password, secure, remotePath)
+  return new FTPArtifactClient(
+    host,
+    port,
+    username,
+    password,
+    secure,
+    remotePath
+  )
 }
