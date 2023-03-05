@@ -53,7 +53,13 @@ describe('FTP Artifact Client', () => {
     })
     fs.writeFileSync(path.join(serverRoot, run_id, 'TestArtifact/3/3.txt'), '3')
 
-    const client = create(serverAddr, serverPort, 'anonymous', 'anonymous')
+    const client = create(
+      serverAddr,
+      serverPort,
+      'anonymous',
+      'anonymous',
+      false
+    )
     const response = await client.downloadArtifact(
       'TestArtifact',
       path.join(clientRoot, 'downloadDir'),
@@ -82,7 +88,13 @@ describe('FTP Artifact Client', () => {
     })
     fs.writeFileSync(path.join(serverRoot, run_id, 'TestArtifact/3/3.txt'), '3')
 
-    const client = create(serverAddr, serverPort, 'anonymous', 'anonymous')
+    const client = create(
+      serverAddr,
+      serverPort,
+      'anonymous',
+      'anonymous',
+      false
+    )
     const response = await client.downloadArtifact(
       'TestArtifact',
       path.join(clientRoot, 'downloadDir'),
@@ -130,7 +142,13 @@ describe('FTP Artifact Client', () => {
       '6'
     )
 
-    const client = create(serverAddr, serverPort, 'anonymous', 'anonymous')
+    const client = create(
+      serverAddr,
+      serverPort,
+      'anonymous',
+      'anonymous',
+      false
+    )
     const responses = await client.downloadAllArtifacts(
       path.join(clientRoot, 'downloadDir')
     )
