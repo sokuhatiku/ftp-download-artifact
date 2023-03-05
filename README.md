@@ -1,4 +1,24 @@
-# Download-Artifact v3
+# FTP-Download-Artifact
+
+FTP Download Artifact is a GitHub Action that downloads artifacts from a FTP server. It is based on the [Download Artifact](https://github.com/actions/download-artifact) action.
+
+See also [ftp-upload-artifact](https://github.com/sokuhatiku/ftp-upload-artifact).
+
+# Additional Inputs
+
+```yaml
+- uses: actions/download-artifact@v3
+  with:
+    name: my-artifact
+    host: ftp-server.example.com
+    port: 21
+    username: ${{ secrets.FTP_USERNAME }}
+    password: ${{ secrets.FTP_PASSWORD }}
+    secure: false
+    remote-path: /path/to/artifact/stored
+```
+
+----
 
 This downloads artifacts from your build
 
