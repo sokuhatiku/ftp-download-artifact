@@ -9,18 +9,30 @@ inputs:
     description: 'Destination path'
     required: false
   host:
+    description: 'FTP server host'
     required: true
   port:
+    description: 'FTP server port'
     required: false
-    default: 21
+    default: '21'
   username:
-    required: true
-  password:
-    required: true
-  secure:
+    description: 'Username for FTP access. Defaults to anonymous if not provided'
     required: false
-    default: false
+    default: anonymous
+  password:
+    description: 'Password for FTP access. Defaults to anonymous if not provided'
+    required: false
+    default: anonymous
+  secure:
+    description: 'Use ftps protocol.'
+    required: false
+    default: 'false'
   remote-path:
+    description: >
+      Remote root directory to store artifacts. Defaults to root directory if not provided.
+      If the path does not exist, it will be created.
+
+      If possible, change the server-side user home directory instead of using this option.
     required: false
     default: /
 outputs:
