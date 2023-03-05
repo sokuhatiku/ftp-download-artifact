@@ -1,6 +1,6 @@
-name: 'Download a Build Artifact'
-description: 'Download a build artifact that was previously uploaded in the workflow by the upload-artifact action'
-author: 'GitHub'
+name: 'Download a Build Artifact via FTP(S) Protocol'
+description: 'Download a build artifact that was previously uploaded in the workflow by the ftp-upload-artifact action'
+author: 'Sokuhatiku'
 inputs: 
   name:
     description: 'Artifact name'
