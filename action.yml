@@ -1,6 +1,9 @@
 name: 'Download a Build Artifact via FTP(S) Protocol'
 description: 'Download a build artifact that was previously uploaded in the workflow by the ftp-upload-artifact action'
 author: 'Sokuhatiku'
+branding:
+  icon: 'download'
+  color: 'green'
 inputs: 
   name:
     description: 'Artifact name'
