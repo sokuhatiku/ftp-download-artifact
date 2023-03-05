@@ -17,6 +17,9 @@ inputs:
     required: true
   password:
     required: true
+  secure:
+    required: false
+    default: false
   remote-path:
     required: false
     default: /

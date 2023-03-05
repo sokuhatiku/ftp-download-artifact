@@ -12,6 +12,7 @@ async function run(): Promise<void> {
     const port = parseInt(core.getInput(Inputs.Port, {required: false}))
     const username = core.getInput(Inputs.Username, {required: true})
     const password = core.getInput(Inputs.Password, {required: true})
+    const secure = Boolean(core.getInput(Inputs.Secure, {required: false}))
     const remotePath = core.getInput(Inputs.RemotePath, {required: false})
 
     let resolvedPath
@@ -28,6 +29,7 @@ async function run(): Promise<void> {
       port,
       username,
       password,
+      secure,
       remotePath
     )
     if (!name) {

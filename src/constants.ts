@@ -5,6 +5,7 @@ export enum Inputs {
   Port = 'port',
   Username = 'username',
   Password = 'password',
+  Secure = 'secure',
   RemotePath = 'remote-path'
 }
 export enum Outputs {
