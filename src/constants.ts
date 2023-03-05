@@ -1,7 +1,7 @@
 export enum Inputs {
   Name = 'name',
   Path = 'path',
-  Server = 'server',
+  Host = 'host',
   Port = 'port',
   Username = 'username',
   Password = 'password',

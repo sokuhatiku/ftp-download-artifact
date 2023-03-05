@@ -8,7 +8,7 @@ async function run(): Promise<void> {
   try {
     const name = core.getInput(Inputs.Name, {required: false})
     const path = core.getInput(Inputs.Path, {required: false})
-    const server = core.getInput(Inputs.Server, {required: true})
+    const host = core.getInput(Inputs.Host, {required: true})
     const port = parseInt(core.getInput(Inputs.Port, {required: false}))
     const username = core.getInput(Inputs.Username, {required: true})
     const password = core.getInput(Inputs.Password, {required: true})
@@ -24,7 +24,7 @@ async function run(): Promise<void> {
     core.debug(`Resolved path is ${resolvedPath}`)
 
     const artifactClient = artifact.create(
-      server,
+      host,
       port,
       username,
       password,
