@@ -7,7 +7,7 @@ See also [ftp-upload-artifact](https://github.com/sokuhatiku/ftp-upload-artifact
 # Additional Inputs
 
 ```yaml
-- uses: actions/download-artifact@v3
+- uses: sokuhatiku/ftp-download-artifact@v1
   with:
     name: my-artifact
     host: ftp-server.example.com
